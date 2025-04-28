@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make a new entry</title>
+    <style>
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        body{
+            background-color: #3f2a1f12;
+            color:rgb(107, 81, 35);
+            font-family:'DM Sans', sans-serif;
+            padding: 20px
+        }
+        textarea{
+            text-align: center;
+             width: 200px;
+        }
+        form{
+            text-align:center;
+            border-radius: 50px;
+            margin-bottom: 15px;
+            
+        }
+    </style>  
+</head>
+<body>
+    <h1>📃Make a new entry</h1>
+    <form method = 'POST'>
+        <textarea name = 'journal' placeholder="Type it here"></textarea>
+        <button type = submit>Submit</button>
+    </form>
+    {% if data %}
+    <p style = 'background-color: green;'>{{entry}} has been saved</p>
+    {%endif%}
+</body>
+</html>

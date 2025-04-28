@@ -1,0 +1,27 @@
+v1.0
+#get quotes from an api
+    -Get quote  
+        -Maybe make a seperate file for quotes
+        -Do i need an object for that so is there a reaosn to make another class?
+        -Should i add a time method and delay how often it spits out quotes?
+#Music player
+    -add a queue
+    -add embeded
+voice commands
+    -is this even possible?
+Reddit feed
+    -Get from hopecore or hopeposting
+    -maybe put it in a sepereate channel
+Maybe a to do list
+    -Create, update, remove, delete task
+    -Maybe make a little embeded gui for it
+    -task get saved in a db
+Personal check up dm
+    -Ask user for permission to do so
+    -Would then dm the user "How are you feeling"
+        -This would get saved in the journal
+
+v2.0
+Start doing embeds
+Start integrating AI
+
