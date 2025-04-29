@@ -55,9 +55,9 @@ async def journal(interaction: discord.Interaction, entry: str):
     }
     res = requests.post('http://127.0.0.1:5000/api/journal', json = data)
     if res.ok:
-        await interaction.response.send_message('It has been sent')
+        await interaction.response.send_message('☑️Entry has been logged')
     else:
-       await interaction.response.send_message('Please try again')
+       await interaction.response.send_message('✖️Please try again')
 @client.command()
 async def play(ctx, *music):
     song = list(music)
