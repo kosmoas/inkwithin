@@ -57,23 +57,33 @@ async def journal(interaction: discord.Interaction, entry: str):
 
     }
     res = requests.post('http://127.0.0.1:5000/api/journal', json = data)
+    embed = discord.Embed(
+        colour= discord.Colour.orange(),
+        title= 'Journal',
+        description='Write anything!'
+    )
+    embed.add_field(name = interaction.user.name, value='☑️ your entry has been sent' )
     if res.ok:
-        await interaction.response.send_message('☑️Entry has been logged')
+        await interaction.response.send_message(embed=embed)
     else:
        await interaction.response.send_message('✖️Please try again')
-@client.command()
-async def play(ctx, *music):
-    song = list(music)
-    songName = ' '
-    for i in song:
-        songName = songName + ' ' + i
-    if ctx.voice_client:
+@client.tree.command()
+async def play(interaction: discord.Interaction, entry :str):
+    await interaction.response.defer()
+    songName = entry
+    if interaction.guild.voice_client:
         url = songgetter.search_and_download(songName)
         print(f'url:{url}')
         audio = FFmpegPCMAudio(url)
-        ctx.guild.voice_client.play(audio)
+        interaction.guild.voice_client.play(audio)
+        embedd = discord.Embed(
+            colour= discord.Colour.orange(),
+            title = 'Now playing:',
+            description=  songName
+        )
+        await interaction.followup.send(embed=embedd)
     else:
-        await ctx.send('poop')
+        await interaction.response.send_message("Try inviting me with the /join command")
 @client.command() #stop music
 async def stop(ctx):
     if ctx.voice_client:
