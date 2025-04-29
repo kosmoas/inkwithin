@@ -1,4 +1,4 @@
-import discord, os, quotes, time, songgetter, redditpuller, datetime, requests
+import discord, os, quotes, time, songgetter, redditpuller, datetime, requests, prompy
 from discord.ext import commands
 from dotenv import load_dotenv
 from discord import FFmpegPCMAudio
@@ -38,6 +38,9 @@ async def joinvc(interaction: discord.Interaction):
         await interaction.response.send_message("I have connected!")
     else:
         await interaction.response.send_message('Sorry try joining a vc so i can join you')
+@client.tree.command(name = 'prompt', description= 'use me to figure out a prompt to write!')
+async def promptup(interaciton: discord.Interaction):
+    await interaciton.response.send_message(f'Prompt: {prompy.random_prompt()}')
 @client.tree.command(name = 'leavevc', description = 'Use me to make me leave the vc!')
 async def leave(interaction: discord.Interaction):
     if interaction.guild.voice_client:
