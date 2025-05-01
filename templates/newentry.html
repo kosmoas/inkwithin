@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Make a new entry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>New Journal Entry</title>
     <style>
         h1 {
             text-align: center;
@@ -27,14 +28,26 @@
         }
     </style>  
 </head>
-<body>
-    <h1>📃Make a new entry</h1>
-    <form method = 'POST'>
-        <textarea name = 'journal' placeholder="Type it here"></textarea>
-        <button type = submit>Submit</button>
+<body class="bg-black text-orange-400 min-h-screen p-6 font-sans">
+    <header class="mb-8">
+        <h1 class="text-3xl font-bold">➕ New Journal Entry</h1>
+        <p class="text-gray-400 text-sm">Take a deep breath and write anything.</p>
+    </header>
+    <form method="POST" action="/new" class="bg-gray-900 p-6 rounded-lg shadow-md max-w-3xl mx-auto">
+        <label for="entry" class="block text-lg font-semibold mb-2">Your Journal</label>
+        <textarea 
+            id="entry" 
+            name="entry" 
+            rows="8" 
+            class="w-full p-4 rounded-md bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
+            placeholder="Write your thoughts here..."
+            required></textarea>
+            <button 
+            type="submit" 
+            class="mt-4 bg-orange-500 text-black font-semibold py-2 px-4 rounded-md hover:bg-orange-600 transition">
+            ☑️ Save Entry
+        </button>
     </form>
-    {% if entry %}
-    <p style = 'background-color: green;'>{{entry}} has been saved</p>
-    {%endif%}
+
 </body>
 </html>
