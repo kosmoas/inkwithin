@@ -31,8 +31,7 @@ def theme_page():
     pass
 @back.route('/dashboard')
 def dashpage():
-    entrielist = load_entries()
-    entrielist = reversed(entrielist)
+    entrielist = entriesdb.get_all_entries()
     return render_template('dashboard.html', entries = entrielist)
 @back.route('/new', methods = ['POST','GET']) #looking out for post methods or get methos
 def new_page():

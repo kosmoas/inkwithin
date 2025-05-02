@@ -21,6 +21,9 @@ def appendtodb(user, entry, date):
         'INSERT INTO journals(user, entry, date) VALUES (?,?,?)', tupy
     )
     connection.commit()
+def get_all_entries():
+    cursor.execute("SELECT user, entry, date FROM journals ORDER BY id DESC")
+    return [{"user": row[0], "entry": row[1], "timestamp": row[2]} for row in cursor.fetchall()]
 
 
 connection.commit()
