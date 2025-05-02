@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, request, json
-import requests, datetime
+import requests, datetime, entriesdb
 
 
 back = Flask(__name__)
@@ -47,6 +47,8 @@ def new_page():
                 'entry': entry
             }
             entries.append(data)
+            entriesdb.appendtodb(data['user'], data['entry'], data['Date'])
+            entriesdb.connection.close()
             save_entries(entries)
     return render_template('newentry.html', entry = request.form.get('journal'))
 if __name__ == '__main__':

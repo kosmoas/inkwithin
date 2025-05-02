@@ -1,4 +1,4 @@
-import discord, os, quotes, time, songgetter, redditpuller, datetime, requests, prompy
+import discord, os, quotes, time, songgetter, redditpuller, datetime, requests, prompy, sqlite3
 from discord.ext import commands
 from dotenv import load_dotenv
 from discord import FFmpegPCMAudio
@@ -8,7 +8,6 @@ quote = quotes.quote()
 intents = discord.Intents.all()
 intents.message_content = True
 client = commands.Bot(command_prefix='~', intents=intents)
-
 #events
 @client.event
 async def on_ready():
