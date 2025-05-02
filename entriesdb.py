@@ -1,5 +1,7 @@
 import sqlite3, os,json
-connection =sqlite3.connect("journals.db", check_same_thread= False)
+from dotenv import load_dotenv
+load_dotenv()
+connection =sqlite3.connect(os.getenv('DB_NAME'), check_same_thread= False)
 cursor = connection.cursor()
 
 

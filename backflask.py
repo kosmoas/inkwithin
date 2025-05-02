@@ -48,7 +48,7 @@ def new_page():
             }
             entries.append(data)
             entriesdb.appendtodb(data['user'], data['entry'], data['Date'])
-            entriesdb.connection.close()
+            
             save_entries(entries)
     return render_template('newentry.html', entry = request.form.get('journal'))
 if __name__ == '__main__':
