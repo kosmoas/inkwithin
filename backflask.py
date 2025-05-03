@@ -1,8 +1,10 @@
-from flask import Flask, render_template, jsonify, request, json
-import requests, datetime, entriesdb
-
-
+from flask import( Flask, render_template, jsonify, request, json,
+                   flash, get_flashed_messages, session, redirect)
+import requests, datetime, entriesdb, os
+from dotenv import load_dotenv
+load_dotenv()
 back = Flask(__name__)
+back.secret_key = os.getenv('FLASH_KEY', 'devkey')
 entrielist = []
 def load_entries():
     try:
@@ -39,16 +41,18 @@ def new_page():
     if request.method == 'POST':
         entry = request.form.get('journal')
         if entry:
-            entries = load_entries()
-            data = {
-                'Date': datetime.datetime.now().strftime('%B %d, %Y at %I:%M %p'),
-                'user': 'Anon',
-                'entry': entry
-            }
-            entries.append(data)
-            entriesdb.appendtodb(data['user'], data['entry'], data['Date'])
-            
-            save_entries(entries)
+                entries = load_entries()
+                data = {
+                    'Date': datetime.datetime.now().strftime('%B %d, %Y at %I:%M %p'),
+                    'user': 'Anon',
+                    'entry': entry
+                }
+                entries.append(data)
+                entriesdb.appendtodb(data['user'], data['entry'], data['Date'])
+                save_entries(entries)
+                flash("✅ Your journal was saved successfully!")
+                return redirect("/dashboard")
+
     return render_template('newentry.html', entry = request.form.get('journal'))
 if __name__ == '__main__':
     back.run(debug=True)
