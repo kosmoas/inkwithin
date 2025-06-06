@@ -1,11 +1,21 @@
 from flask import( Flask, render_template, jsonify, request, json,
                    flash, get_flashed_messages, session, redirect)
 import requests, datetime, entriesdb, os
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 load_dotenv()
 back = Flask(__name__)
 back.secret_key = os.getenv('FLASH_KEY', 'devkey')
 entrielist = []
+
+back.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.sqlite3'
+back.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+userbase = SQLAlchemy(back)
+class User(userbase.Model):
+    id = userbase.Column('id',userbase.Integer, primary_key=True)
+    username = userbase.Column('username',userbase.String(80), unique=True, nullable=False)
+    password = userbase.Column('password',userbase.String(200), nullable=False)
 def load_entries():
     try:
         with open('journal_entries.json', 'r') as journal:
@@ -28,9 +38,35 @@ def journal_page():
     with open('journal_entries.json', 'w') as entries: #open the file   
         json.dump(listt, entries) #load it onto the file
     return jsonify({'status': 'yes'})
-@back.route('/theme') #maybe set this to like a little widget in the future
-def theme_page():
-    pass
+@back.route('/register', methods = ['POST', 'GET'])
+def register():
+     if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if User.query.filter_by(username = username).first():
+             flash('Sorry this username already exist')
+             return redirect('/register')
+        hashpass = generate_password_hash(password)
+        new_user = User(username = username, password = hashpass)
+        userbase.session.add(new_user)
+        userbase.session.commit()
+        flash('You have sucessfully made a new account!')
+        return redirect('/login')
+     return render_template('register.html')
+@back.route('/login', methods = ['POST', 'GET'])
+def login():
+     if request.method == 'POST':
+          username = request.form['username']
+          password = request.form['password']
+          user = User.query.filter_by(username = username).first()
+          if user and check_password_hash(user.password, password):
+                session['user.id'] = user.id
+                flash('Logged in!')
+                return redirect('/dashboard')
+          else:
+               flash('Sorry incorrect credentials')
+               return redirect('/login')
+     return render_template('login.html')
 @back.route('/dashboard')
 def dashpage():
     entrielist = entriesdb.get_all_entries()
@@ -55,4 +91,5 @@ def new_page():
 
     return render_template('newentry.html', entry = request.form.get('journal'))
 if __name__ == '__main__':
+    userbase.create_all()
     back.run(debug=True)

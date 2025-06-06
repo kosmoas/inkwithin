@@ -14,7 +14,7 @@ for item in q:
 #cursor.executemany('INSERT INTO journals(user, entry, date) VALUES (?, ?, ?)', currentlist)
 connection.commit()
 
-
+    
 def appendtodb(user, entry, date):
     tupy = (user, entry, date)
     cursor.execute(
@@ -27,8 +27,7 @@ def get_all_entries():
 
 
 connection.commit()
-for row in cursor.execute("select * from journals"):
-    print(row)
+
 
 
 
