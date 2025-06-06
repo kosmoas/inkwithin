@@ -14,8 +14,11 @@ back.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 userbase = SQLAlchemy(back)
 class User(userbase.Model):
     id = userbase.Column('id',userbase.Integer, primary_key=True)
+    \
     username = userbase.Column('username',userbase.String(80), unique=True, nullable=False)
     password = userbase.Column('password',userbase.String(200), nullable=False)
+with back.app_context():
+    userbase.create_all()
 def load_entries():
     try:
         with open('journal_entries.json', 'r') as journal:
@@ -60,7 +63,7 @@ def login():
           password = request.form['password']
           user = User.query.filter_by(username = username).first()
           if user and check_password_hash(user.password, password):
-                session['user.id'] = user.id
+                session['user_id'] = user.id
                 flash('Logged in!')
                 return redirect('/dashboard')
           else:
@@ -69,8 +72,11 @@ def login():
      return render_template('login.html')
 @back.route('/dashboard')
 def dashpage():
+    user_id = session.get('user_id')
+    user = User.query.get(user_id)
+
     entrielist = entriesdb.get_all_entries()
-    return render_template('dashboard.html', entries = entrielist)
+    return render_template('dashboard.html', entries = entrielist, user_id = user.username)
 @back.route('/new', methods = ['POST','GET']) #looking out for post methods or get methos
 def new_page():
     entry = ''
@@ -91,5 +97,4 @@ def new_page():
 
     return render_template('newentry.html', entry = request.form.get('journal'))
 if __name__ == '__main__':
-    userbase.create_all()
     back.run(debug=True)

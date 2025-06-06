@@ -39,7 +39,7 @@
 <body class = "bg-black text-orange-400 min-h-screen p-6 font-sans">
     <header class="mb-8">
         <h1 class="text-4xl font-bold">📝 InkWithin Journal</h1>
-        <p class="text-gray-400 ">Welcome back, write your heart out.</p>
+        <p class="text-gray-400 ">Welcome {{user_id}}, write your heart out.</p>
     </header>
     {% with messages = get_flashed_messages() %}
         {% if messages %}

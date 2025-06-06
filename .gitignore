@@ -1,5 +1,7 @@
 .env
 journals.db
+instance
+users.sqlite3
 __pycache__/
 *.pyc
 *.pyo
