@@ -46,6 +46,7 @@
     </header>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
+
             <div class="mb-6 p-4 bg-orange-500 text-black rounded-md shadow-md font-semibold">
                 {% for message in messages %}
                     {{ message }}
@@ -64,7 +65,14 @@
         {% for entry in entries %}
         <div class="bg-gray-800 p-5 rounded-lg shadow-md">
             <div class="text-sm text-gray-400 mb-2">{{ entry.date}}</div>
+            {% if entry.tag %}
+            <div class="text-xs text-orange-300 mb-1 italic">#{{ entry.tag }}</div>
+            {% endif %}
             <div class="text-base leading-relaxed">{{ entry.content}}</div>
+        </div>
+        <div class="flex gap-3 text-sm">
+            <a href = '/edit/{{entry.id}}' class="bg-blue-500 text-black px-4 py-2 rounded-md font-semibold hover:bg-blue-600 transition">Edit</a>
+            <a href = '/delete/{{entry.id}}' class="bg-red-500 text-black px-4 py-2 rounded-md font-semibold hover:bg-red-600 transition">Delete</a>
         </div>
         {% endfor %}
     </section>

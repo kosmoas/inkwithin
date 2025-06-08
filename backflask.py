@@ -21,6 +21,7 @@ class journalent(userbase.Model):
     user_id = userbase.Column('User_id', userbase.Integer, nullable = False)
     content = userbase.Column('Content', userbase.Text, nullable = False)
     date = userbase.Column('Date', userbase.String(100), nullable = False)
+    tag = userbase.Column('Tag', userbase.String(100), nullable = True)
 with back.app_context():
     userbase.create_all()
 def load_entries():
@@ -79,6 +80,29 @@ def logout():
      session.pop('user_id', None)
      flash('You have been logged out 🎈')
      return redirect('/login')
+@back.route('/edit/<entry_id>', methods = ['GET','POST'])
+def edit(entry_id):
+    entry = journalent.query.get_or_404(entry_id)
+    if entry.user_id != session['user_id']:
+        flash('You are not allowed to edit this')
+        return redirect('/login')
+    if request.method == 'POST':
+        entry.content = request.form['content']
+        userbase.session.commit()
+        flash('You have sucessfully changed it')
+        return redirect('/dashboard')
+    return render_template('edit_entry.html', entry = entry)
+@back.route('/delete/<entry_id>', methods = ['GET','POST'])
+def delete_entry(entry_id):
+    entry = journalent.query.get_or_404(entry_id)
+    if entry.user_id != session['user_id']:
+        flash("You are not allowed to delete this")
+        return redirect('/dashboard')
+    userbase.session.delete(entry)
+    userbase.session.commit()
+    flash('You have sucessfully deleted the entry')
+    return redirect('/dashboard')
+     
 @back.route('/dashboard')
 def dashpage():
     user_id = session.get('user_id')
@@ -91,17 +115,20 @@ def dashpage():
 @back.route('/new', methods = ['POST','GET']) #looking out for post methods or get methos
 def new_page():
     entry = ''
-    if 'user_id' not in session:
+    if 'user_id' not in session: 
          flash('You must be logged in to create a message')
          return redirect('/login')
     if request.method == 'POST':
         entry = request.form.get('journal')
+        tag = request.form.get('tag')
+        print(tag)
         if entry:
 
                 data = journalent(
                     date = datetime.datetime.now().strftime('%B %d, %Y at %I:%M %p'),
                     user_id =session['user_id'],
-                    content = entry
+                    content = entry,
+                    tag = tag
                 )
                 userbase.session.add(data)
                 userbase.session.commit()

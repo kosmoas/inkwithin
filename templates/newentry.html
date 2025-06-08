@@ -33,7 +33,16 @@
         <h1 class="text-3xl font-bold">➕ New Journal Entry</h1>
         <p class="text-gray-400 text-sm">Take a deep breath and write anything.</p>
     </header>
+        
     <form method='POST' class="bg-gray-900 p-6 rounded-lg shadow-md max-w-3xl mx-auto">
+        <label for="tag" class="block text-sm mb-1">Choose a tag (optional):</label>
+        <select name = "tag" id="tag" class="text-black p-2 rounded mb-4 w-full">
+            <option value =''>None</option>
+            <option value="Hopefull">Hopefull</option>
+            <option value ='Anxious'>Anxious</option>
+            <option value ='Tired'>Tired</option>
+
+        </select>
         <label for="entry" class="block text-lg font-semibold mb-2">Your Journal</label>
         <textarea 
             id="entry" 
