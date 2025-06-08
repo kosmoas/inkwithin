@@ -37,9 +37,12 @@
     </style>
 </head>
 <body class = "bg-black text-orange-400 min-h-screen p-6 font-sans">
-    <header class="mb-8">
+    <header class="mb-8 flex items-center justify-between">
+        <div class="text-center">
         <h1 class="text-4xl font-bold">📝 InkWithin Journal</h1>
         <p class="text-gray-400 ">Welcome {{user_id}}, write your heart out.</p>
+        </div>
+        <a href = '/logout' class=" ml-auto text-sm text-orange-400">Logout</a>
     </header>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -56,12 +59,12 @@
             ➕ New Journal
         </a>
     </div>
+    
     <section class="space-y-6">
         {% for entry in entries %}
         <div class="bg-gray-800 p-5 rounded-lg shadow-md">
-            <div class="text-xl font-semibold">{{ entry.user }}</div>
             <div class="text-sm text-gray-400 mb-2">{{ entry.date}}</div>
-            <div class="text-base leading-relaxed">{{ entry.entry}}</div>
+            <div class="text-base leading-relaxed">{{ entry.content}}</div>
         </div>
         {% endfor %}
     </section>
