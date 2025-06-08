@@ -109,8 +109,14 @@ def dashpage():
     if not user_id:
          flash('Sorry please login first')
          redirect('/login')
+    selected_tag = request.args.get('tag')
+
+    if selected_tag:
+        entrielist = journalent.query.filter_by(user_id = user_id, tag = selected_tag.capitalize()).all()
+    else:
+        entrielist = journalent.query.filter_by(user_id = user_id).all() 
     user = User.query.get(user_id)
-    entrielist = journalent.query.filter_by(user_id = user_id).all()
+    
     return render_template('dashboard.html', entries = entrielist, user_id = user.username)
 @back.route('/new', methods = ['POST','GET']) #looking out for post methods or get methos
 def new_page():
