@@ -1,5 +1,5 @@
 from flask import( Flask, render_template, jsonify, request, json,
-                   flash, get_flashed_messages, session, redirect)
+                   flash, get_flashed_messages, session, redirect, url_for)
 import requests, datetime, os
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -9,6 +9,14 @@ back = Flask(__name__)
 back.secret_key = os.getenv('FLASH_KEY', 'devkey')
 entrielist = []
 
+DISCORD_CLIENT_ID = os.getenv("DISCORD_CLIENT_ID")
+DISCORD_CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
+DISCORD_REDIRECT_URI = os.getenv("DISCORD_REDIRECT_URI")
+API_BASE_URL = "https://discord.com/api"
+AUTH_BASE_URL = f"{API_BASE_URL}/oauth2/authorize"
+TOKEN_URL = f"{API_BASE_URL}/oauth2/token"
+USER_URL = f"{API_BASE_URL}/users/@me"
+DISCORD_OAUTH_URL = f"https://discord.com/api/oauth2/authorize?client_id={DISCORD_CLIENT_ID}&redirect_uri={DISCORD_REDIRECT_URI}&response_type=code&scope=identify"
 back.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.sqlite3'
 back.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 userbase = SQLAlchemy(back)
@@ -48,6 +56,58 @@ def journal_page():
     userbase.session.add(new_entry)
     userbase.session.commit()
     return jsonify({'status':'it saved'})
+@back.route('/login/discord')
+def discord_login():
+    return redirect(DISCORD_OAUTH_URL)
+@back.route("/callback")
+def discord_callback():
+    code = request.args.get("code") #pulls out the auth code when a user goes to authorize
+    tokens = requests.post( #sends a post request to this endpoint to exchange the code for an acess token and refresh
+        "https://discord.com/api/oauth2/token",
+        data={
+            "client_id": DISCORD_CLIENT_ID,
+            "client_secret": DISCORD_CLIENT_SECRET,
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": DISCORD_REDIRECT_URI,
+        },
+        headers={"Content-Type": "application/x-www-form-urlencoded"}
+    )
+
+    token_json = tokens.json() # converts the tokens into a json that I can read
+    access_token = token_json["access_token"] #grabs the access token that was requested
+
+    # Get user info like name and pfp
+    user_response = requests.get( 
+        "https://discord.com/api/users/@me",
+        headers={"Authorization": f"Bearer {access_token}"}
+    )
+
+    user_info = user_response.json()
+    discord_username = user_info["username"]
+    discord_id = user_info["id"]
+
+    # stores the current sessions userid and username to discord
+    session["user_id"] = discord_id
+    session["username"] = discord_username
+    # Check if user exists
+    existing_user = User.query.filter_by(id=discord_id).first()
+
+    if not existing_user:
+        new_user = User(
+            username=discord_username,
+            id=discord_id,
+            password=generate_password_hash(discord_id) 
+    )
+        userbase.session.add(new_user)
+        userbase.session.commit()
+        session['user_id'] = new_user.id
+    else:
+        session['user_id'] = existing_user.id
+
+
+    return redirect("/dashboard")
+
 @back.route('/register', methods = ['POST', 'GET'])
 def register():
      if request.method == 'POST':
