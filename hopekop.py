@@ -66,7 +66,7 @@ async def journal(interaction: discord.Interaction, entry: str):
     if res.ok:
         await interaction.response.send_message(embed=embed)
     else:
-       await interaction.response.send_message('✖️Please try again')
+       await interaction.response.send_message(f'✖️Please try again{res.status_code}')
 @client.tree.command()
 async def play(interaction: discord.Interaction, entry :str):
     await interaction.response.defer()

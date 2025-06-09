@@ -46,7 +46,7 @@ def save_entries(newlist):
 @back.route('/')
 def home():
     return redirect('/login')
-@back.route('/api/journal', methods =['POST'])
+@back.route('/api/journal', methods=['POST'])
 def journal_page():
     data = request.json # now that I have the data I want to append it to both the entrylist and the file
     user = data['user']
@@ -62,7 +62,7 @@ def journal_page():
         new_user = User(
             username=user,
             id=id,
-            password=generate_password_hash(id) 
+            password=generate_password_hash(str(id)) 
     )
         new_entry = journalent(user_id = new_user.id, content = content, date = date)
         userbase.session.add(new_user)
