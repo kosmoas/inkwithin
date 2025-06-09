@@ -45,7 +45,7 @@ def save_entries(newlist):
 
 @back.route('/')
 def home():
-    return render_template('journal.html')
+    return redirect('/login')
 @back.route('/api/journal', methods =['POST'])
 def journal_page():
     data = request.json # now that I have the data I want to append it to both the entrylist and the file
