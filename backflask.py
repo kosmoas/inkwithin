@@ -153,4 +153,5 @@ def new_page():
 
     return render_template('newentry.html', entry = request.form.get('journal'))
 if __name__ == '__main__':
-    back.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    back.run(debug = True, host = '0.0.0.0', port = port)
