@@ -52,22 +52,24 @@ def journal_page():
     user = data['user']
     content = data['entry']
     date = data['Date']
-    id = data['id']
-    existing_user = User.query.filter_by(username = user).first()
-    if existing_user:
-        new_entry = journalent(user_id = existing_user.id, content = content, date = date)
-        userbase.session.add(new_entry)
-        userbase.session.commit()
-    else:
+    discord_id = str(data['id'])
+    print(data)
+    existing_user = User.query.filter_by(id = discord_id).first()
+    if not existing_user:
         new_user = User(
             username=user,
             id=id,
             password=generate_password_hash(str(id)) 
     )
-        new_entry = journalent(user_id = new_user.id, content = content, date = date)
         userbase.session.add(new_user)
         userbase.session.commit()
-        session['user_id'] = new_user.id
+        current_user = new_user
+    else:
+        current_user = existing_user
+    new_entry = journalent(user_id=current_user.id, content=content, date=date)
+    userbase.session.add(new_entry)
+    userbase.session.commit()
+
     return jsonify({'status':'it saved'})
 @back.route('/login/discord')
 def discord_login():
@@ -118,7 +120,8 @@ def discord_callback():
     else:
         session['user_id'] = existing_user.id
 
-
+    print(new_user.id)
+    print(existing_user.id)
     return redirect("/dashboard")
 
 @back.route('/register', methods = ['POST', 'GET'])
