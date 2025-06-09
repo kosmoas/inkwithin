@@ -58,7 +58,7 @@ def journal_page():
     if not existing_user:
         new_user = User(
             username=user,
-            id=id,
+            id=discord_id,
             password=generate_password_hash(str(id)) 
     )
         userbase.session.add(new_user)
