@@ -53,7 +53,6 @@ def journal_page():
     content = data['entry']
     date = data['Date']
     discord_id = str(data['id'])
-    print(data)
     existing_user = User.query.filter_by(id = discord_id).first()
     if not existing_user:
         new_user = User(
@@ -120,8 +119,6 @@ def discord_callback():
     else:
         session['user_id'] = existing_user.id
 
-    print(new_user.id)
-    print(existing_user.id)
     return redirect("/dashboard")
 
 @back.route('/register', methods = ['POST', 'GET'])
@@ -215,7 +212,6 @@ def new_page():
     if request.method == 'POST':
         entry = request.form.get('journal')
         tag = request.form.get('tag')
-        print(tag)
         if entry:
 
                 data = journalent(
