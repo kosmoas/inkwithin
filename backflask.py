@@ -109,13 +109,23 @@ def dashpage():
     if not user_id:
          flash('Sorry please login first')
          redirect('/login')
-    selected_tag = request.args.get('tag')
-
-    if selected_tag:
-        entrielist = journalent.query.filter_by(user_id = user_id, tag = selected_tag.capitalize()).all()
-    else:
-        entrielist = journalent.query.filter_by(user_id = user_id).all() 
     user = User.query.get(user_id)
+    if not user:
+        session.pop('user_id', None)
+        flash("Your session expired or user no longer exists. Please log in again.")
+        return redirect('/login')
+    
+
+    selected_tag = request.args.get('tag')
+    search_query = request.args.get('query')
+    query = journalent.query.filter(journalent.user_id == user_id)
+    if search_query:
+       query = query.filter(journalent.content.ilike(f"%{search_query}%"))
+    if selected_tag:
+        query = journalent.query.filter_by(user_id = user_id, tag = selected_tag.capitalize())
+  
+    user = User.query.get(user_id)
+    entrielist = query.all()
     
     return render_template('dashboard.html', entries = entrielist, user_id = user.username)
 @back.route('/new', methods = ['POST','GET']) #looking out for post methods or get methos
