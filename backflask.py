@@ -49,12 +49,25 @@ def home():
 @back.route('/api/journal', methods =['POST'])
 def journal_page():
     data = request.json # now that I have the data I want to append it to both the entrylist and the file
-    user_id = data['user']
+    user = data['user']
     content = data['entry']
     date = data['Date']
-    new_entry = journalent(user_id = user_id, content = content, date = date)
-    userbase.session.add(new_entry)
-    userbase.session.commit()
+    id = data['id']
+    existing_user = User.query.filter_by(username = user).first()
+    if existing_user:
+        new_entry = journalent(user_id = existing_user.id, content = content, date = date)
+        userbase.session.add(new_entry)
+        userbase.session.commit()
+    else:
+        new_user = User(
+            username=user,
+            id=id,
+            password=generate_password_hash(id) 
+    )
+        new_entry = journalent(user_id = existing_user.id, content = content, date = date)
+        userbase.session.add(new_user)
+        userbase.session.commit()
+        session['user_id'] = new_user.id
     return jsonify({'status':'it saved'})
 @back.route('/login/discord')
 def discord_login():

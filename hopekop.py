@@ -1,4 +1,4 @@
-import discord, os, quotes, time, songgetter, redditpuller, datetime, requests, prompy, sqlite3
+import discord, os, quotes, time, songgetter, redditpuller, datetime, requests, prompy, sqlite3, backflask
 from discord.ext import commands
 from dotenv import load_dotenv
 from discord import FFmpegPCMAudio
@@ -51,11 +51,12 @@ async def leave(interaction: discord.Interaction):
 async def journal(interaction: discord.Interaction, entry: str):
     data ={
         "user": interaction.user.name,
+        'id': interaction.user.id,
         "entry": entry,
         'Date': datetime.datetime.now().strftime('%B %d, %Y at %I:%M %p')
 
     }
-    res = requests.post('http://127.0.0.1:5000/api/journal', json = data)
+    res = requests.post('https://inkkwithin.onrender.com/api/journal', json = data)
     embed = discord.Embed(
         colour= discord.Colour.orange(),
         title= 'Journal',
