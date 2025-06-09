@@ -64,7 +64,7 @@ def journal_page():
             id=id,
             password=generate_password_hash(id) 
     )
-        new_entry = journalent(user_id = existing_user.id, content = content, date = date)
+        new_entry = journalent(user_id = new_user.id, content = content, date = date)
         userbase.session.add(new_user)
         userbase.session.commit()
         session['user_id'] = new_user.id
