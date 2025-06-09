@@ -1,25 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul>
-      {% for msg in messages %}
-        <li>{{ msg }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-</head>
-<body>
-    <h2>Login</h2>
-    <form method = 'POST'>
-        <input name = 'username' placeholder = 'username' required>
-        <input name = 'password' type ="password" placeholder="password" required>
-        <button type = submit>submit</button>
+{% extends 'blueprint.html' %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-10 bg-gray-900 p-6 rounded-lg shadow-md text-white">
+    <h2 class="text-2xl font-bold mb-4 text-center">Welcome Back</h2>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="mb-4 p-3 bg-red-500 text-black rounded">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" class="space-y-4">
+        <div>
+            <label for="username" class="block mb-1 text-sm font-medium">Username</label>
+            <input name="username" required placeholder="Your username"
+                   class="w-full px-4 py-2 rounded bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500">
+        </div>
+        <div>
+            <label for="password" class="block mb-1 text-sm font-medium">Password</label>
+            <input name="password" type="password" required placeholder="Your password"
+                   class="w-full px-4 py-2 rounded bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500">
+        </div>
+        <button type="submit"
+                class="w-full bg-orange-500 text-black font-bold py-2 px-4 rounded hover:bg-orange-600 transition">
+            Log In
+        </button>
     </form>
-</body>
-</html>
+
+    <p class="text-sm text-center mt-4">
+        Don't have an account?
+        <a href="/register" class="text-orange-400 hover:underline">Create one</a>
+    </p>
+</div>
+{% endblock %}

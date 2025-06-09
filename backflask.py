@@ -41,11 +41,13 @@ def home():
 @back.route('/api/journal', methods =['POST'])
 def journal_page():
     data = request.json # now that I have the data I want to append it to both the entrylist and the file
-    listt = load_entries() #loading entries from the json
-    listt.append(data) #adding entries to the json
-    with open('journal_entries.json', 'w') as entries: #open the file   
-        json.dump(listt, entries) #load it onto the file
-    return jsonify({'status': 'yes'})
+    user_id = data['user']
+    content = data['entry']
+    date = data['Date']
+    new_entry = journalent(user_id = user_id, content = content, date = date)
+    userbase.session.add(new_entry)
+    userbase.session.commit()
+    return jsonify({'status':'it saved'})
 @back.route('/register', methods = ['POST', 'GET'])
 def register():
      if request.method == 'POST':

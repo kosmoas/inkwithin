@@ -1,62 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <title>New Journal Entry</title>
-    <style>
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        body{
-            background-color: #3f2a1f12;
-            color:rgb(107, 81, 35);
-            font-family:'DM Sans', sans-serif;
-            padding: 20px
-        }
-        textarea{
-            text-align: center;
-             width: 200px;
-        }
-        form{
-            text-align:center;
-            border-radius: 50px;
-            margin-bottom: 15px;
-            
-        }
-    </style>  
-</head>
-<body class="bg-black text-orange-400 min-h-screen p-6 font-sans">
-    <header class="mb-8">
-        <h1 class="text-3xl font-bold">➕ New Journal Entry</h1>
-        <p class="text-gray-400 text-sm">Take a deep breath and write anything.</p>
-    </header>
-        
-    <form method='POST' class="bg-gray-900 p-6 rounded-lg shadow-md max-w-3xl mx-auto">
-        <label for="tag" class="block text-sm mb-1">Choose a tag (optional):</label>
-        <select name = "tag" id="tag" class="text-black p-2 rounded mb-4 w-full">
-            <option value =''>None</option>
-            <option value="Hopefull">Hopefull</option>
-            <option value ='Anxious'>Anxious</option>
-            <option value ='Tired'>Tired</option>
+{% extends "blueprint.html" %}
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <h2 class="text-3xl font-bold mb-6 text-orange-400">📓 New Journal Entry</h2>
 
-        </select>
-        <label for="entry" class="block text-lg font-semibold mb-2">Your Journal</label>
-        <textarea 
-            id="entry" 
-            name="journal" 
-            rows="8" 
-            class="w-full p-4 rounded-md bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
-            placeholder="Write your thoughts here..."
-            required></textarea>
-            <button 
-            type="submit" 
-            class="mt-4 bg-orange-500 text-black font-semibold py-2 px-4 rounded-md hover:bg-orange-600 transition">
-            ☑️ Save Entry
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="mb-6 p-4 bg-orange-500 text-black rounded-md shadow-md font-semibold">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" class="space-y-4">
+        <div>
+            <label for="journal" class="block text-sm font-medium mb-1">Your Entry</label>
+            <textarea id="journal" name="journal" rows="6" placeholder="Write your thoughts here..." class="w-full p-4 rounded-md bg-gray-900 text-orange-100 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none" required>{{ entry or '' }}</textarea>
+        </div>
+
+        <div>
+            <label for="tag" class="block text-sm font-medium mb-1">Tag (optional)</label>
+            <input type="text" name="tag" id="tag" placeholder="e.g., hopeful, anxious" class="w-full p-3 rounded-md bg-gray-900 text-orange-100 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500">
+        </div>
+
+        <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-black font-bold py-2 px-6 rounded-md transition">
+            💾 Save Entry
         </button>
     </form>
-
-</body>
-</html>
+</div>
+{% endblock %}
