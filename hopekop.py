@@ -7,6 +7,7 @@ token = os.getenv('DISCORD_TOKEN')
 quote = quotes.quote()
 intents = discord.Intents.all()
 intents.message_content = True
+intents.voice_states = True
 client = commands.Bot(command_prefix='~', intents=intents)
 #events
 @client.event
@@ -29,14 +30,21 @@ async def goodbye(ctx):
 @client.tree.command(name = 'randomquote', description = 'get inspiration!')
 async def randomquote(interaction: discord.Interaction):  
     await interaction.response.send_message(quote.random_quote())
-@client.tree.command(name = 'joinvc', description='Use to let me a join a vc!')
+@client.tree.command(name='joinvc', description='Join your voice channel')
 async def joinvc(interaction: discord.Interaction):
-    if interaction.user.fetch_voice():
+    if interaction.user.voice and interaction.user.voice.channel:
+        await interaction.response.defer()
         channel = interaction.user.voice.channel
-        await channel.connect()
-        await interaction.response.send_message("I have connected!")
+        try:
+            await channel.connect()
+            await interaction.response.send_message("✅ I joined your voice channel!")
+        except discord.ClientException:
+            await interaction.response.send_message("⚠️ I'm already in a voice channel.")
+        except Exception as e:
+            await interaction.response.send_message(f"❌ Couldn't join: `{e}`")
     else:
-        await interaction.response.send_message('Sorry try joining a vc so i can join you')
+        await interaction.response.send_message("❌ You're not in a voice channel!")
+
 @client.tree.command(name = 'prompt', description= 'use me to figure out a prompt to write!')
 async def promptup(interaciton: discord.Interaction):
     await interaciton.response.send_message(f'Prompt: {prompy.random_prompt()}')

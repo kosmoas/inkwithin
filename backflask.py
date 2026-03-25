@@ -4,6 +4,8 @@ import requests, datetime, os
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
+from aihelp import generate_prompt
+from journal_service import create_journal_entry
 load_dotenv()
 back = Flask(__name__)
 back.secret_key = os.getenv('FLASH_KEY', 'devkey')
@@ -30,6 +32,10 @@ class journalent(userbase.Model):
     content = userbase.Column('Content', userbase.Text, nullable = False)
     date = userbase.Column('Date', userbase.String(100), nullable = False)
     tag = userbase.Column('Tag', userbase.String(100), nullable = True)
+    source = userbase.Column('Source', userbase.String(50), nullable = False, default = 'web')
+    ai_mood = userbase.Column(userbase.String(100), nullable=True)
+    ai_reflection = userbase.Column(userbase.Text, nullable=True)
+    ai_follow_up = userbase.Column(userbase.Text, nullable=True)
 with back.app_context():
     userbase.create_all()
 def load_entries():
@@ -48,28 +54,53 @@ def home():
     return redirect('/login')
 @back.route('/api/journal', methods=['POST'])
 def journal_page():
-    data = request.json # now that I have the data I want to append it to both the entrylist and the file
-    user = data['user']
-    content = data['entry']
-    date = data['Date']
-    discord_id = str(data['id'])
-    existing_user = User.query.filter_by(id = discord_id).first()
+    data = request.get_json()
+
+    username = data.get('user')
+    content = data.get('entry')
+    discord_id = data.get('id')
+    tag = data.get('tag')
+
+    if not username or not content or not discord_id:
+        return jsonify({'error': 'Missing required fields'}), 400
+
+    discord_id = int(discord_id)
+
+    existing_user = User.query.filter_by(id=discord_id).first()
+
     if not existing_user:
         new_user = User(
-            username=user,
+            username=username,
             id=discord_id,
-            password=generate_password_hash(str(id)) 
-    )
+            password=generate_password_hash(str(discord_id))
+        )
         userbase.session.add(new_user)
         userbase.session.commit()
         current_user = new_user
     else:
         current_user = existing_user
-    new_entry = journalent(user_id=current_user.id, content=content, date=date)
-    userbase.session.add(new_entry)
-    userbase.session.commit()
 
-    return jsonify({'status':'it saved'})
+    try:
+        saved_entry = create_journal_entry(
+            db=userbase,
+            journal_model=journalent,
+            user_id=current_user.id,
+            content=content,
+            tag=tag,
+            source="discord"
+        )
+
+        return jsonify({
+            'status': 'saved',
+            'entry_id': saved_entry.id,
+            'mood': saved_entry.ai_mood,
+            'reflection': saved_entry.ai_reflection,
+            'follow_up': saved_entry.ai_follow_up,
+            'source': saved_entry.source
+        }), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 @back.route('/login/discord')
 def discord_login():
     return redirect(DISCORD_OAUTH_URL)
@@ -203,29 +234,36 @@ def dashpage():
     entrielist = query.all()
     
     return render_template('dashboard.html', entries = entrielist, user_id = user.username)
-@back.route('/new', methods = ['POST','GET']) #looking out for post methods or get methos
+@back.route('/new', methods=['POST', 'GET']) #looks for get and post requests
 def new_page():
-    entry = ''
-    if 'user_id' not in session: 
-         flash('You must be logged in to create a message')
-         return redirect('/login')
+    if 'user_id' not in session:
+        flash('You must be logged in to create a message')
+        return redirect('/login')
+
     if request.method == 'POST':
-        entry = request.form.get('journal')
+        entry = request.form.get('journal', '').strip()
         tag = request.form.get('tag')
-        if entry:
 
-                data = journalent(
-                    date = datetime.datetime.now().strftime('%B %d, %Y at %I:%M %p'),
-                    user_id =session['user_id'],
-                    content = entry,
-                    tag = tag
-                )
-                userbase.session.add(data)
-                userbase.session.commit()
-                flash("✅ Your journal was saved successfully!")
-                return redirect("/dashboard")
+        if not entry:
+            flash('Please write something before saving.')
+            return redirect('/new')
 
-    return render_template('newentry.html', entry = request.form.get('journal'))
+        try:
+            create_journal_entry(
+                db=userbase,
+                journal_model=journalent,
+                user_id=session['user_id'],
+                content=entry,
+                tag=tag,
+                source="web"
+            )
+            flash("✅ Your journal was saved successfully!")
+            return redirect('/dashboard')
+        except Exception as e:
+            flash(f"Something went wrong while saving your entry: {e}")
+            return redirect('/new')
+
+    return render_template('new_entry.html')
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     back.run(debug = True, host = '0.0.0.0', port = port)
