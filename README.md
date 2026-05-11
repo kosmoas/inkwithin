@@ -1,41 +1,45 @@
-📝 InkWithin
-InkWithin is a full stack journaling platform combining a Flask web app and a feature rich Discord bot. Built for reflection, mental health, and daily expression, it’s designed to work seamlessly across platforms.
+InkWithin
 
-🌐 Live Demo
-Check out the deployed site here: https://inkkwithin.onrender.com
+InkWithin is a full-stack journaling platform built with Flask and Discord.py that allows users to create journal entries from both a web application and a Discord bot interface. The project focuses on reflection, habit tracking, and cross-platform journaling workflows.
 
-🔧 Features
-Web App (Flask)
-📝 Register/login with traditional or Discord OAuth2
+Features
+-Web Application
+-User authentication with traditional login and Discord OAuth2
+-Create, edit, delete, and tag journal entries
+-Search and filter entries by keyword or tags
+-Responsive UI built with Tailwind CSS
+-Persistent data storage using SQLite and SQLAlchemy
+-Discord Bot Integration
+-/journal command for posting entries directly from Discord
+-Journal prompt generation for reflection
+-Quote retrieval system
+-Reddit feed integration
+-Music playback and queue controls through voice channels
+-Tech Stack
+-Backend
+-Python 3.11
+-Flask
+-SQLAlchemy
+-SQLite
+-Frontend
+-Tailwind CSS
+-Jinja templates
+-Integrations
+-Discord.py
+-Discord Slash Commands API
+-Reddit API
+-YouTube/voice playback libraries
+-Deployment
+-Render
+-Docker (in progress)
+-Self-hosted homelab environment (in progress)
+-Project Goals
 
-📚 Create, edit, tag, and delete journal entries
+The project was built to explore:
 
-🔍 Search and filter entries by keyword or tag
-
-🎨 Soft, minimalist UI with Tailwind CSS
-
-💾 SQLite + SQLAlchemy for backend persistence
-
-Discord Bot
-🧠 /journal: Send entries straight from Discord to your online journal
-
-🗯️ /randomquote: Pull an inspirational quote
-
-🎶 /play, /pause, /resume, /stop: Music playback with YouTube search
-
-📰 /redditfeed: Fetch trending Reddit posts
-
-✍️ /prompt: Get a journal prompt to reflect on
-
-💡 Tech Stack
-Flask 
-
-SQLite & SQLAlchemy
-
-Tailwind CSS
-
-Discord.py + Discord Slash Commands
-
-Render (for hosting)
-
-Python 3.11
+-full-stack web development
+-API integration
+-Discord bot development
+-authentication systems
+-deployment workflows
+-self-hosting and homelab infrastructure
